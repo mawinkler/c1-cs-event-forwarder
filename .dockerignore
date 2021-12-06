@@ -1,0 +1,7 @@
+.gitignore
+__pycache__
+images
+config.yml.sample
+Dockerfile
+LICENSE
+README.md

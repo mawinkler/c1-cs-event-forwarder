@@ -1,0 +1,13 @@
+# Cloud One
+cloudone:
+  c1_url: us-1.cloudone.trendmicro.com:443
+  api_key: <CLOUD ONE API KEY>
+
+# Log receiver
+server:
+  host: <SYSLOG RECEIVER IP>
+  port: <UDP PORT>
+  facility: local3
+
+# Polling interval in minutes
+interval: 1
