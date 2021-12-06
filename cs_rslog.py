@@ -135,7 +135,7 @@ def collect(c1_url,
             # Since we might get an unorderd event list we need to check for the latest timestamp
             # in the events list
             event_timestamp_max = last_timestamp_sent
-            for event in events:
+            for event in reversed(events):
                 event_timestamp = datetime.strptime(event['timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ")
                 if (event_timestamp > last_timestamp_sent):
                     if (event_timestamp > event_timestamp_max):

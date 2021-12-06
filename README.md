@@ -20,7 +20,7 @@ To run in continuously, simply run it as a container:
 
 ```sh
 docker build -t c1cs-rslog .
-docker run -d c1cs-rslog
+docker run -d --name c1cs-rslog c1cs-rslog
 ```
 
 ## Support
