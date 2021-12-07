@@ -13,8 +13,8 @@ import socket
 import time
 import yaml
 import json
-# import pprint
-from operator import itemgetter, attrgetter
+import pprint
+from operator import itemgetter
 from cefevent import CEFEvent
 from datetime import datetime, timedelta
 
@@ -97,14 +97,14 @@ def collect_rt(c1_url,
             response.raise_for_status()
         except requests.exceptions.Timeout as err:
             _LOGGER.error(response.text)
-            raise SystemExit(err)
+            break
         except requests.exceptions.HTTPError as err:
             _LOGGER.error(response.text)
-            raise SystemExit(err)
+            break
         except requests.exceptions.RequestException as err:
             # catastrophic error. bail.
             _LOGGER.error(response.text)
-            raise SystemExit(err)
+            break
 
         response = response.json()
         # Error handling
@@ -177,14 +177,14 @@ def collect_dc(c1_url,
             response.raise_for_status()
         except requests.exceptions.Timeout as err:
             _LOGGER.error(response.text)
-            raise SystemExit(err)
+            break
         except requests.exceptions.HTTPError as err:
             _LOGGER.error(response.text)
-            raise SystemExit(err)
+            break
         except requests.exceptions.RequestException as err:
             # catastrophic error. bail.
             _LOGGER.error(response.text)
-            raise SystemExit(err)
+            break
 
         response = response.json()
         # Error handling
@@ -363,8 +363,8 @@ def collect(c1_url,
 
     last_timestamp_sent = datetime.utcnow() - timedelta(minutes=(interval + 1))
     while True:
-        # Setting start_time to utcnow - (INTERVAL + 1) to create a little overlap
-        start_time = (datetime.utcnow() - timedelta(minutes=(interval + 1))).strftime("%Y-%m-%dT%H:%M:%SZ")
+        # Setting start_time to utcnow - (INTERVAL + 2) to create a little overlap
+        start_time = (datetime.utcnow() - timedelta(minutes=(interval + 2))).strftime("%Y-%m-%dT%H:%M:%SZ")
         end_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
         events = []
