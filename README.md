@@ -1,6 +1,6 @@
 # Cloud One Container Security Runtime Events Forwarder
 
-Queries events interval based from the Runtime Security sensors of Cloud One Container Security and forwards them in CEF format to SIEM / Big Data Engines. Tested with Splunk Enterprise only.
+Queries events interval based from the Runtime Security sensors and evaluation events from Deployment and Continuous Compliance of Cloud One Container Security. The events are forwarded in CEF format to SIEM / Big Data Engines. Tested with Splunk Enterprise only.
 
 ![alt text](images/splunk.png "Splunk Search")
 
