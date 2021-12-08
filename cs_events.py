@@ -2,7 +2,7 @@
 """Example event forwarder for Container Security
 
 Purpose of this forwarder it to send runtime security evets in CEF
-format to SIEM or Big Data engines. Will be deprecated as soon as
+format to SIEM or Big Data engines. Will likely be deprecated as soon as
 Container Security is integrated with Vision One.
 """
 
@@ -364,17 +364,19 @@ def collect(c1_url,
     last_timestamp_sent = datetime.utcnow() - timedelta(minutes=(interval + 1))
     while True:
         # Setting start_time to utcnow - (INTERVAL + 2) to create a little overlap
-        start_time = (datetime.utcnow() - timedelta(minutes=(interval + 2))).strftime("%Y-%m-%dT%H:%M:%SZ")
+        # start_time = (datetime.utcnow() - timedelta(minutes=(interval + 2))).strftime("%Y-%m-%dT%H:%M:%SZ")
+        # Setting start_time to last timestamp sent minus one minute to create a little overlap
+        start_time = (last_timestamp_sent - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
         end_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
         events = []
-        _LOGGER.info("Query deployment and continuous events")
+        _LOGGER.debug("Query deployment and continuous events")
         events += collect_dc(c1_url,
                              api_key,
                              start_time,
                              end_time)
 
-        _LOGGER.info("Query runtime events")
+        _LOGGER.debug("Query runtime events")
         events += collect_rt(c1_url,
                              api_key,
                              start_time,

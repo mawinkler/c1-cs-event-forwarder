@@ -9,4 +9,4 @@ COPY . .
 
 RUN pip3 install --no-cache-dir -r requirements.txt && pip3 list
 
-CMD ["python", "./cs_rslog.py"]
+CMD ["python", "./cs_events.py"]
