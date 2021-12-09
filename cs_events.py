@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 
 # Constants
 _LOGGER = logging.getLogger(__name__)
-logging.basicConfig(stream=sys.stdout, level=logging.INFO,
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s (%(threadName)s) [%(funcName)s] %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
 
@@ -33,7 +33,7 @@ FACILITY = {
 }
 
 LEVEL = {
-    'emerg': 0, 'alert':1, 'crit': 2, 'err': 3,
+    'emergency': 0, 'alert':1, 'critical': 2, 'error': 3,
     'warning': 4, 'notice': 5, 'info': 6, 'debug': 7
 }
 
@@ -233,18 +233,19 @@ def cef_rt(event, facility, host, port):
 
     c.set_field('name', event['name'])
     c.set_field('deviceVendor' , 'Trend Micro')
-    c.set_field('deviceProduct', 'Cloud One Container Security Runtime')
+    c.set_field('deviceProduct', 'Cloud One Container Security')
     c.set_field('rt', event['timestamp'])
     c.set_field('severity', str(LEVEL[event['severity']]))
     c.set_field('message',
         "details" + " " +
+        "module=" + "runtime" + " " + 
         "ruleID=" + event['ruleID'] + " " +
         "clusterID=" + event['clusterID'] + " " +
         "clusterName=" + event['clusterName'] + " " +
         "mitigation=" + event['mitigation'] + " " +
         "policyName=" + event['policyName'] + " " +
-        "k8s.ns.name=" + event['k8s.ns.name'] + " " +
-        "k8s.pod.name=" + event['k8s.pod.name'] + " " +
+        "namespace=" + event['k8s.ns.name'] + " " +
+        "podName=" + event['k8s.pod.name'] + " " +
         "proc.cmdline=" + event['proc.cmdline'] + " " +
         "proc.pname=" + event.get('proc.pname', '<NA>') + " " +
         "container.id=" + event['container.id'] + " " +
@@ -310,15 +311,22 @@ def cef_dc_reasons(event, reason, facility, host, port):
     else:
         severity = LEVEL['warning']
 
+    module = ""
+    if (event.get('action', None)):
+        module = "deploy"
+    if (event.get('mitigation', None)):
+        module = "compliance"
+
     # Building one event per reason
     c = CEFEvent()
     c.set_field('name', reason['type'].capitalize())
     c.set_field('deviceVendor' , 'Trend Micro')
-    c.set_field('deviceProduct', 'Cloud One Container Security Deploy')
+    c.set_field('deviceProduct', 'Cloud One Container Security')
     c.set_field('rt', event['timestamp'])
     c.set_field('severity', str(severity))
     c.set_field('message',
         "details" + " " +
+        "module=" + module + " " +
         "action=" + event.get('action', '<N/A>') + " " +
         "mitigation=" + event.get('mitigation', '<N/A>') + " " +
         "clusterID=" + event['clusterID'] + " " +
@@ -366,11 +374,14 @@ def collect(c1_url,
         # Setting start_time to utcnow - (INTERVAL + 2) to create a little overlap
         # start_time = (datetime.utcnow() - timedelta(minutes=(interval + 2))).strftime("%Y-%m-%dT%H:%M:%SZ")
         # Setting start_time to last timestamp sent minus one minute to create a little overlap
-        start_time = (last_timestamp_sent - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
-        end_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+        start_time_dt = last_timestamp_sent - timedelta(minutes=1)
+        end_time_dt = datetime.utcnow()
+        start_time = start_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+        end_time = end_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         events = []
         _LOGGER.debug("Query deployment and continuous events")
+        _LOGGER.debug("Time slice for query {} seconds".format(int((end_time_dt - start_time_dt).total_seconds())))
         events += collect_dc(c1_url,
                              api_key,
                              start_time,
