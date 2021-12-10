@@ -1,0 +1,26 @@
+version: "3.6"
+
+services:
+  # run with: SPLUNK_PASSWORD=trendmicro docker-compose up -d
+  splunk:
+    image: ${SPLUNK_IMAGE:-splunk/splunk:latest}
+    container_name: so1
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_PASSWORD
+      - SPLUNK_ADD=tcp 1514
+      - TZ=Europe/Berlin
+      - PHP_TZ=Europe/Berlin
+    volumes:
+      - opt-splunk-etc:/opt/splunk/etc
+      - opt-splunk-var:/opt/splunk/var
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ports:
+      - 1514:1514
+      - 8880:8000
+      - 50514:50514/udp
+
+volumes:
+  opt-splunk-etc:
+  opt-splunk-var:

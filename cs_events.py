@@ -353,7 +353,8 @@ def collect(c1_url,
             host,
             port,
             facility,
-            interval):
+            interval,
+            overlap):
     """
     Query for security events and send CEF via UDP to the receiver.
     
@@ -369,12 +370,12 @@ def collect(c1_url,
 
     _LOGGER.debug("Cloud One API endpoint: {}".format(c1_url))
 
-    last_timestamp_sent = datetime.utcnow() - timedelta(minutes=(interval + 1))
+    last_timestamp_sent = datetime.utcnow() - timedelta(seconds=(interval * 2))
     while True:
         # Setting start_time to utcnow - (INTERVAL + 2) to create a little overlap
         # start_time = (datetime.utcnow() - timedelta(minutes=(interval + 2))).strftime("%Y-%m-%dT%H:%M:%SZ")
         # Setting start_time to last timestamp sent minus one minute to create a little overlap
-        start_time_dt = last_timestamp_sent - timedelta(minutes=1)
+        start_time_dt = last_timestamp_sent - timedelta(seconds=overlap)
         end_time_dt = datetime.utcnow()
         start_time = start_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
         end_time = end_time_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -409,7 +410,7 @@ def collect(c1_url,
 
             last_timestamp_sent = event_timestamp_max
 
-        time.sleep(interval * 60)
+        time.sleep(interval)
     
 
 if __name__ == '__main__':
@@ -423,4 +424,5 @@ if __name__ == '__main__':
             cfg['server']['host'],
             cfg['server']['port'],
             cfg['server']['facility'],
-            cfg['interval'])
+            cfg['polling']['interval'],
+            cfg['polling']['overlap'])

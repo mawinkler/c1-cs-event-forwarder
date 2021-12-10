@@ -9,5 +9,7 @@ server:
   port: <UDP PORT>
   facility: local3
 
-# Polling interval in minutes
-interval: 1
+# Polling interval in seconds
+polling:
+  interval: 60
+  overlap: 10

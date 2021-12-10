@@ -23,6 +23,38 @@ docker build -t c1cs-events .
 docker run --rm -d --name c1cs-events c1cs-events
 ```
 
+## Quickly start a Splunk
+
+`docker-compose.yaml`:
+
+```yaml
+version: "3.6"
+
+services:
+  splunk:
+    image: ${SPLUNK_IMAGE:-splunk/splunk:latest}
+    container_name: so1
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_PASSWORD
+      - SPLUNK_ADD=tcp 1514
+      - TZ=Europe/Berlin
+      - PHP_TZ=Europe/Berlin
+    volumes:
+      - opt-splunk-etc:/opt/splunk/etc
+      - opt-splunk-var:/opt/splunk/var
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ports:
+      - 1514:1514
+      - 8880:8000
+      - 50514:50514/udp
+
+volumes:
+  opt-splunk-etc:
+  opt-splunk-var:
+```
+
 ## Support
 
 This is an Open Source community project. Project contributors may be able to help, depending on their time and availability. Please be specific about what you're trying to do, your system, and steps to reproduce the problem.
